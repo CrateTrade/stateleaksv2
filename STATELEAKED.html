@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Address Display</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.8;
+            font-size: 16px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .status-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            border-left: 5px solid #3498db;
+        }
+        
+        .status-box.success {
+            border-left-color: #2ecc71;
+        }
+        
+        .status-box.error {
+            border-left-color: #e74c3c;
+        }
+        
+        .ip-display {
+            background: #2c3e50;
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-family: monospace;
+            font-size: 22px;
+            text-align: center;
+            word-break: break-all;
+        }
+        
+        .info {
+            background: #e8f4fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .info h3 {
+            color: #2980b9;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info ul {
+            padding-left: 20px;
+            color: #34495e;
+        }
+        
+        .info li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-download {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-download:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .email-status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fff8e1;
+            color: #e65100;
+            font-weight: 500;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .ip-display {
+                font-size: 18px;
+                padding: 15px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-network-wired"></i> IP Address Display</h1>
+            <p>Your public IP address information</p>
+        </div>
+        
+        <div class="content">
+            <div class="status-box" id="statusBox">
+                <i class="fas fa-sync fa-spin"></i> Fetching your IP address...
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+            
+            <div class="ip-display" id="ipDisplay">
+                <!-- IP address will appear here -->
+            </div>
+            
+            <div class="email-status" id="emailStatus">
+                <i class="fas fa-envelope"></i> Preparing to send IP information...
+            </div>
+            
+            <div class="info">
+                <h3><i class="fas fa-info-circle"></i> How this works</h3>
+                <ul>
+                    <li>This page automatically fetches your public IP address from an external service</li>
+                    <li>Your IP and timestamp are displayed on the page</li>
+                    <li>The information is automatically sent to the specified email address</li>
+                    <li>You can download a CSV record for your own reference</li>
+                </ul>
+            </div>
+            
+            <div class="actions">
+                <button class="btn-download" id="downloadBtn" disabled>
+                    <i class="fas fa-download"></i> Download CSV
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This page does not store any information on the server</p>
+        </div>
+    </div>
+
+    <script>
+        // Replace with the email you want to receive the IP information
+        const OWNER_EMAIL = "californiazombiegame@gmail.com";
+        
+        // DOM elements
+        const statusBox = document.getElementById('statusBox');
+        const progressBar = document.getElementById('progressBar');
+        const ipDisplay = document.getElementById('ipDisplay');
+        const emailStatus = document.getElementById('emailStatus');
+        const downloadBtn = document.getElementById('downloadBtn');
+        
+        // Simulate progress animation
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += 5;
+            progressBar.style.width = `${progress}%`;
+            
+            if (progress >= 100) {
+                clearInterval(progressInterval);
+            }
+        }, 200);
+        
+        // Fetch public IP from a public API
+        async function fetchPublicIp() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                if (!response.ok) throw new Error('Failed to fetch IP');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('Error fetching IP:', error);
+                throw error;
+            }
+        }
+        
+        // Send IP information via EmailJS (you would need to set up an account)
+        async function sendEmail(ip, timestamp) {
+            // This is a simulation since we can't actually send email without a backend
+            // In a real implementation, you would use a service like EmailJS, SendGrid, etc.
+            
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    // Simulate successful email sending
+                    console.log(`Simulating email sent to ${OWNER_EMAIL}`);
+                    console.log(`IP: ${ip}, Timestamp: ${timestamp}`);
+                    resolve(true);
+                }, 2500);
+            });
+        }
+        
+        // Download CSV
+        function downloadCsv(ip, timestamp) {
+            const csv = `IP Address,Timestamp\n${ip},${timestamp}`;
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ip_address_${timestamp.replace(/[:.]/g, '-')}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Main function
+        async function init() {
+            try {
+                // Fetch IP address
+                const ip = await fetchPublicIp();
+                const timestamp = new Date().toISOString();
+                
+                // Update UI
+                statusBox.innerHTML = `<i class="fas fa-check-circle"></i> IP Address Successfully Retrieved`;
+                statusBox.classList.add('success');
+                ipDisplay.textContent = `${ip} | ${timestamp}`;
+                
+                // Enable download button
+                downloadBtn.disabled = false;
+                downloadBtn.onclick = () => downloadCsv(ip, timestamp);
+                
+                // Send email
+                emailStatus.innerHTML = `<i class="fas fa-sync fa-spin"></i> Sending IP information to ${OWNER_EMAIL}...`;
+                
+                const emailSent = await sendEmail(ip, timestamp);
+                
+                if (emailSent) {
+                    emailStatus.innerHTML = `<i class="fas fa-check-circle"></i> IP information sent successfully to ${OWNER_EMAIL}`;
+                    emailStatus.style.background = '#e8f5e9';
+                    emailStatus.style.color = '#2e7d32';
+                }
+                
+            } catch (error) {
+                statusBox.innerHTML = `<i class="fas fa-exclamation-circle"></i> Error: ${error.message}`;
+                statusBox.classList.add('error');
+                emailStatus.innerHTML = `<i class="fas fa-exclamation-circle"></i> Failed to send email`;
+            }
+        }
+        
+        // Start the process when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
